@@ -1,0 +1,13 @@
+scripts/datapipes/test.nc
+scripts/datapipes/UK_PV_metadata.csv
+scripts/datapipes/nwp_data
+quartz_solar_forecast/data
+quartz_solar_forecast/dataset/TZ-SAM/data
+quartz_solar_forecast.egg-info
+.env
+venv
+frontend/node_modules
+frontend/.vite
+__pycache__/
+.cache.sqlite
+.venv
