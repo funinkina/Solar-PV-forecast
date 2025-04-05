@@ -11,3 +11,4 @@ frontend/.vite
 __pycache__/
 .cache.sqlite
 .venv
+node_modules
