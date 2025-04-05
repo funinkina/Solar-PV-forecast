@@ -1,89 +1,28 @@
-# Quartz Solar Forecast
-
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-34-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-
-![image](https://github.com/user-attachments/assets/6563849b-b355-4842-93e4-61c15a9a9ebf)
-[![tags badge](https://img.shields.io/github/v/tag/openclimatefix/open-source-quartz-solar-forecast?include_prereleases&sort=semver&color=FFAC5F)](https://github.com/openclimatefix/open-source-quartz-solar-forecast/tags)
-[![pypi badge](https://img.shields.io/pypi/v/quartz-solar-forecast?&color=07BCDF)](https://pypi.org/project/quartz-solar-forecast/)
-[![ease of contribution: easy](https://img.shields.io/badge/ease%20of%20contribution:%20easy-32bd50)](https://github.com/openclimatefix/ocf-meta-repo?tab=readme-ov-file#overview-of-ocfs-nowcasting-repositories) 
-[![Python package tests](https://github.com/openclimatefix/open-source-quartz-solar-forecast/actions/workflows/pytest.yaml/badge.svg)](https://github.com/openclimatefix/open-source-quartz-solar-forecast/actions/workflows/pytest.yaml)
-
+# Solar PV forecast
 
 The aim of the project is to build an open source PV forecast that is free and easy to use.
 The forecast provides the expected generation in `kw` for 0 to 48 hours for a single PV site.
 
-Open Climate Fix also provides a commercial PV forecast, please get in touch at quartz.support@openclimatefix.org
-
-Want to learn more about the project? We've presented Quartz Solar Forecast at two open source conferences:
-
-- **FOSDEM 2024** (Free and Open source Software Developers' European Meeting): How we built Open Quartz, our motivation behind it and its impact on aiding organizations in resource optimization [Watch the talk](https://www.youtube.com/watch?v=NAZ2VeiN1N8)
-
-- **LF Energy 2024**: Exploring Open Quartz's developments - new models, inverter APIs, and our Open Source journey at Open Climate Fix [Watch the talk](https://www.youtube.com/watch?v=YTaq41ztEDg)
-
-
-The current model uses GFS or ICON NWPs to predict the solar generation at a site
-
-```python
-from quartz_solar_forecast.forecast import run_forecast
-from quartz_solar_forecast.pydantic_models import PVSite
-from datetime import datetime
-
-# make a pv site object
-site = PVSite(latitude=51.75, longitude=-1.25, capacity_kwp=1.25)
-
-# run model for today, using ICON NWP data
-predictions_df = run_forecast(site=site, ts=datetime.today(), nwp_source="icon")
-```
-
-which should result in a time series similar to this one:
-
-![https://github.com/openclimatefix/Open-Source-Quartz-Solar-Forecast/blob/main/predictions.png?raw=true](https://github.com/openclimatefix/Open-Source-Quartz-Solar-Forecast/blob/main/predictions.png?raw=true)
-
-A colab notebook providing some examples can be found [here](https://colab.research.google.com/drive/1qKDFRpq4Hk-LHgWuDsz_Najc3Zq-GVNY?usp=sharing).
-
-## Generating Forecasts
-
-To generate solar forecasts and save them into a CSV file, follow these steps:
-
-- Run the forecast_csv.py script with desired inputs
-
-```bash
-python scripts/forecast_csv.py
-```
-
-Replace the --init_time_freq, --start_datetime, --end_datetime, and --site_name with your desired forecast initialization frequency (in hours), start datetime, end datetime, and the name of the forecast or site, respectively.
-
-Output
-
-The script will generate solar forecasts at the specified intervals between the start and end datetimes. The results will be combined into a CSV file named using the site name, start and end datetimes, and the frequency of forecasts. This file will be saved in the scripts/csv_forecasts directory.
-
 ## Installation
 
-The source code is currently hosted on GitHub at: https://github.com/openclimatefix/Open-Source-Quartz-Solar-Forecast
-
-Binary installers for the latest released version are available at the Python Package Index (PyPI)
+First create a virtual environment and install the dependencies.
 
 ```bash
-pip install quartz-solar-forecast
+python3 -m venv .venv
+source .venv/bin/activate # On Windows use .venv\Scripts\activate
+pip install -e .
 ```
-
-You might need to install the following packages first
-
+## Usage
+### Backend
 ```bash
-conda install -c conda-forge pyresample
+python api/main.py
 ```
-
-This can solve the [bug: \_\_\_kmpc_for_static_fini](https://github.com/openclimatefix/Open-Source-Quartz-Solar-Forecast/issues/32).
-
-### Logging
-
-The package logs when `run_forecast` is used. This is useful for OCF to determine how the package is being used 
-and how we can make improvements in the future.
-Note that any latitudes and longitudes are rounded to 2 decimals places in order to anonymize the data.
-If you would like to disable this logging, you can do so by setting the environment variable `QUARTZ_SOLAR_FORECAST_LOGGING` to `False`.
-
+### Frontend
+```bash
+cd dashboards
+npm install
+npm run dev
+```
 
 ## Model
 
@@ -140,20 +79,6 @@ The second option is an XGBoost model and uses the following Numerical Weather P
 - Diffusive Solar Radiation DHI (W/m2): Diffuse solar radiation as average of the preceding hour
 
 To use this model specify `model="xgb"` in `run_forecast(site=site, model="xgb", ts=datetime.today())`.
-
-## Model Comparisons
-
-The following plot shows example predictions of both models for the same time period. Additionally for the Gradient Boosting model (default) the results from the two different data sources are shown.
-
-![model comparison](images/model_data_comparison_hr.png)
-_Predictions using the two different models and different data sources._
-
-## Known restrictions
-
-- The model is trained on [UK MetOffice](https://www.metoffice.gov.uk/services/data/met-office-weather-datahub) NWPs, but when running inference we use [GFS](https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast) data from [Open-meteo](https://open-meteo.com/). The differences between GFS and UK MetOffice could led to some odd behaviours.
-- Depending, whether the timestamp for the prediction lays more than 90 days in the past or not, different data sources for the NWP are used. If we predict within the last 90 days, we can use ICON or GFS from the open-meteo Weather Forecast API. Since ICON doesn't provide visibility, this parameter is queried from GFS in any case. If the date for the prediction is further back in time, a reanalysis model of historical data is used (open-meteo | Historical Weather API). The historical weather API doesn't provide visibility at all, that's why it's set to a maximum of 24000 meter in this case. This can lead to some loss of precision.
-- The model was trained and tested only over the UK, applying it to other geographical regions should be done with caution.
-- When using the XGBoost model, only hourly predictions within the last 90 days are available for data consistency.
 
 ## Evaluation
 

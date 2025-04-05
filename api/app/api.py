@@ -54,21 +54,3 @@ def forecast(forecast_request: ForecastRequest):
     }
 
     return response
-
-@app.get("/solar_inverters/enphase/auth_url")
-def get_enphase_authorization_url():
-    auth_url = get_enphase_auth_url()
-    return {"auth_url": auth_url}
-
-@app.post("/solar_inverters/enphase/token_and_id")
-def get_enphase_token_and_system_id(request: TokenRequest):
-    if "?code=" not in request.redirect_url:
-        raise HTTPException(status_code=400, detail="Invalid redirect URL")
-
-    auth_code = request.redirect_url.split("?code=")[1]
-    try:
-        access_token = get_enphase_access_token(auth_code)
-        enphase_system_id = os.getenv("ENPHASE_SYSTEM_ID")
-        return {"access_token": access_token, "enphase_system_id": enphase_system_id}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error getting access token and system ID: {str(e)}")
