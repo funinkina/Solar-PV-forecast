@@ -70,7 +70,10 @@ export function PVForecastForm({ updatePredictions }) {
 
     const response = await fetch(`${import.meta.env.VITE_URL}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      },
       body: JSON.stringify(payload),
     });
     const data = await response.json();
