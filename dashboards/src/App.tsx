@@ -8,12 +8,20 @@ function App() {
   const [predictions, setPredictions] = useState(null);
   // console.log("Predictions", predictions);
   return (
-    <div className="flex flex-col max-w-screen-lg max-h-screen-lg p-10">
+    <div className="flex flex-col max-w-screen-2xl max-h-screen-2xl p-10 mx-auto">
+      <div className="flex items-center gap-4">
+        <img
+          src="solar.svg"
+          alt="Logo"
+          className="h-10 w-10 mr-2"
+        />
       <div className="space-y-0.5">
+        
         <h2 className="text-2xl font-bold tracking-tight">PV Power Forecast</h2>
         <p className="text-muted-foreground">
           Get solar energy predictions for 48 hours ahead.
         </p>
+      </div>
       </div>
       <Separator className="my-6" />
       <div className="grow flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
@@ -21,7 +29,7 @@ function App() {
           <PVForecastForm updatePredictions={setPredictions} />
         </aside>
         {predictions ? (
-          <div className="grow flex flex-col justify-between">
+          <div className="grow flex flex-col justify-between w-2/5 p-20">
             <PredictionChart predictions={predictions} />
             <PredictionTable predictions={predictions} />
           </div>

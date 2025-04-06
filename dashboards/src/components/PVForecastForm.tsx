@@ -37,6 +37,12 @@ const formSchema = z.object({
   capacity_kwp: z.coerce
     .number({ required_error: "Site capacity is required." })
     .gt(0, { message: "Site capacity must be greather than 0." }),
+  solar_output: z.coerce
+    .number({ required_error: "Solar output is required." })
+    .gt(0, { message: "Solar output must be greather than 0." })
+  .optional(),
+
+  // .max(100, { message: "Solar output must be smaller than or equal to 100" }),
 });
 
 export function PVForecastForm({ updatePredictions }) {
@@ -47,11 +53,12 @@ export function PVForecastForm({ updatePredictions }) {
       latitude: 51.75,
       longitude: -1.25,
       capacity_kwp: 1.25,
+      solar_output: 100,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Values ", values);
+    // console.log("Values ", values);
 
     const payload = {
       site: {
@@ -112,6 +119,21 @@ export function PVForecastForm({ updatePredictions }) {
                 <Input {...field} />
               </FormControl>
               <FormDescription>The capacity (kwp) of the site.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+<FormField
+          control={form.control}
+          name="solar_output"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Solar Output</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormDescription>The Solar output of the area.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
