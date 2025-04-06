@@ -6,7 +6,7 @@ import { PredictionChart } from "./components/PredicitionChart";
 
 function App() {
   const [predictions, setPredictions] = useState(null);
-  console.log("Predictions", predictions);
+  // console.log("Predictions", predictions);
   return (
     <div className="flex flex-col max-w-screen-lg max-h-screen-lg p-10">
       <div className="space-y-0.5">
