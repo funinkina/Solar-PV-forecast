@@ -1,11 +1,40 @@
 import { PVForecastForm } from "./components/PVForecastForm";
 import { Separator } from "./components/ui/separator";
-import { useState } from "react";
+import { useDebugValue, useEffect, useState } from "react";
 import { PredictionTable } from "./components/PredictionTable";
 import { PredictionChart } from "./components/PredicitionChart";
+import OpenAI from 'openai';
 
 function App() {
   const [predictions, setPredictions] = useState(null);
+  const [openAiAnswer, setOpenAiAnswer] = useState(null);
+
+  const client = new OpenAI({
+    apiKey: import.meta.env.VITE_API_KEY, // This is the default and can be omitted
+    dangerouslyAllowBrowser: true, // Use at your own risk
+  });
+
+  const bhenkalauda=async ()=>{
+    const response = await client.responses.create({
+      model: 'gpt-4o',
+      instructions: 'You are given a timestamps with expected solar power generation in watts. Please provide a suggestions to power grid on when to lower or raise the power generation. Give the reply in strictly 2 lines highlighting only the major changes in power generation. Also suggest ways on how deal with extra power generation. *DO NOT USE MARKDOWN*',
+      input: JSON.stringify(predictions),
+    });
+
+  setOpenAiAnswer(response.output_text);
+
+  }
+
+  useEffect(() => {
+    if (predictions) {
+      bhenkalauda();
+    }
+  }, [predictions]);
+
+
+  
+
+
   // console.log("Predictions", predictions);
   return (
     <div className="flex flex-col max-w-screen-2xl max-h-screen-2xl p-10 mx-auto">
@@ -29,9 +58,27 @@ function App() {
           <PVForecastForm updatePredictions={setPredictions} />
         </aside>
         {predictions ? (
-          <div className="grow flex flex-col justify-between w-2/5 p-20">
+          <div className="grow flex flex-col justify-between w-2/5 p-20 gap-4">
             <PredictionChart predictions={predictions} />
+            {openAiAnswer && (
+              <>
+        <div className="flex gap-2 flex-reverse items-center">
+              <img
+                src="sparkle.png"
+                alt="Logo"
+                className="h-10 w-10"
+              />
+              <h1 className="text-xl font-bold">Suggestions</h1>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                {openAiAnswer}
+              </div>
+              </>
+            )}
+            <div className="flex gap-4 flex-col">
+              <h1 className="text-xl font-bold">Period-wise usage</h1>
             <PredictionTable predictions={predictions} />
+            </div>
           </div>
         ) : (
           <div className="grow flex justify-center items-center">
