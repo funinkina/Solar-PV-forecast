@@ -1,5 +1,5 @@
-import { PVForecastForm } from "@/components/PVForecastForm";
-import { Separator } from "@/components/ui/separator";
+import { PVForecastForm } from "./components/PVForecastForm";
+import { Separator } from "./components/ui/separator";
 import { useState } from "react";
 import { PredictionTable } from "./components/PredictionTable";
 import { PredictionChart } from "./components/PredicitionChart";
