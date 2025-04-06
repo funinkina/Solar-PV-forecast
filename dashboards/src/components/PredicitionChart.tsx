@@ -4,7 +4,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "../../ui/chart";
+} from "../components/ui/chart";
 const chartConfig = {
   power: {
     label: "Power (kw)",
