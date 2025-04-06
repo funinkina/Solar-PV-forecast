@@ -12,3 +12,4 @@ __pycache__/
 .cache.sqlite
 .venv
 node_modules
+dist
