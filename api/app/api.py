@@ -8,18 +8,9 @@ from quartz_solar_forecast.pydantic_models import PVSite, ForecastRequest
 app = FastAPI()
 
 # CORS middleware setup
-origins = [
-    "https://solar-pv-forecast.vercel.app/",
-    "https://solar-pv-forecast-git-main-funinkinas-projects.vercel.app/",
-    "http://localhost:5173",
-    "localhost:5173",
-    "http://localhost:8501",
-    "localhost:8501"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
