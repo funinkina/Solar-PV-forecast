@@ -9,6 +9,8 @@ app = FastAPI()
 
 # CORS middleware setup
 origins = [
+    "https://solar-pv-forecast.vercel.app/",
+    "https://solar-pv-forecast-git-main-funinkinas-projects.vercel.app/",
     "http://localhost:5173",
     "localhost:5173",
     "http://localhost:8501",
